@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/fontawesome.min.css">
+	<link rel="stylesheet" href="css/colors.css">
+	<title>Home editor</title>
+	<style>
+		html, body{
+			background: var(--gray-dark);
+		}
+		.table{
+			width: 90%;
+			margin: 30px auto;
+		}
+		.form-control{
+			color: #fff;
+			background-color: #575757;
+		}
+		select.form-control{
+			padding-left: 2px;
+		}
+		table th{
+			text-align: center;
+		}
+		th.col_label{
+			width: 170px;
+		}
+		th.col_icon{
+			width: 170px;
+		}
+		th.col_icon_view,
+		th.col_color_view{
+			width: 50px;
+		}
+		th.col_color{
+			width: 140px;
+		}
+		th.col_command{
+			width: 80px;
+		}
+		td.command .btn-group{
+			width: 100%;
+		}
+		#btn_save{
+			float: right;
+		}
+		#btn_reload,
+		#btn_go_home{
+			margin-left: 8px;
+		}
+		td.icon_view{
+			text-align: center;
+			vertical-align: middle;
+		}
+		#alert_container{
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 100px;
+		}
+	</style>
+	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div id="alert_container"></div>
+	<table class="table table-striped table-bordered table-dark">
+		<thead>
+			<tr>
+				<th class="col_label">Label</th>
+				<th class="col_icon">Icon</th>
+				<th class="col_icon_view"></th>
+				<th class="col_color">Color</th>
+				<th class="col_color_view"></th>
+				<th class="col_url">URL</th>
+				<th class="col_command"></th>
+			</tr>
+		</thead>
+		<tbody id="data_container"></tbody>
+	</table>
+	<script>
+
+		const colors = [
+			'yellow', 'orange', 'pink', 'red',
+			'purple', 'teal', 'blue', 'blue-dark',
+			'green', 'green-dark', 'silver', 'gold'
+		];
+		let menu_data = [];
+
+		$(document).ready(()=>{
+			$.post('api.php', {
+				action: 'get'
+			}, data => {
+				menu_data = data;
+				renderData();
+			});
+		});
+
+		$(document).on('click', '#btn_save', function(e){
+			$.post('api.php', {
+				action: 'set',
+				data: JSON.stringify(menu_data)
+			}, data => {
+				$('#alert_container').html('<div class="alert alert-success fade show" role="alert"><b>Saved!</b></div>');
+				setTimeout(()=>{
+					$('.alert').alert('close');
+				},2000);
+			});
+		});
+
+		$(document).on('click', '#btn_add', function(e){
+			let n = $('.imp_label').length;
+			menu_data.push({
+				label: '',
+				icon: '',
+				color: colors[0],
+				url: ''
+			});
+			renderData();
+		});
+
+		$(document).on('click', '.btn_delete', function(e){
+			let n = $(e.target).data('n');
+			menu_data.splice(n, 1);
+			renderData();
+		});
+
+		$(document).on('click', '.btn_up', function(e){
+			let n = $(e.target).data('n');
+			let i = typeof menu_data[n-1] == 'undefined' ? menu_data.length-1 : n-1;
+			let tmp = menu_data[i];
+			menu_data[i] = menu_data[n];
+			menu_data[n] = tmp;
+			renderData();
+		});
+
+		$(document).on('click', '.btn_down', function(e){
+			let n = $(e.target).data('n');
+			let i = typeof menu_data[n+1] == 'undefined' ? 0 : n+1;
+			let tmp = menu_data[i];
+			menu_data[i] = menu_data[n];
+			menu_data[n] = tmp;
+			renderData();
+		});
+
+		$(document).on('change', '.sel_color', function(e){
+			let n = $(e.target).data('n');
+			let val = $(this).val();
+			menu_data[n].color = val;
+			$('.color_view[data-n="' + n + '"]').attr('class', 'color_view ' + val);
+		});
+
+		$(document).on('keyup', '.imp_icon', function(e){
+			let n = $(e.target).data('n');
+			let val = $(this).val();
+			menu_data[n].icon = val;
+			$('.icon_view[data-n="' + n + '"]').html('<i class="' + val + '"></i>');
+		});
+
+		$(document).on('keyup', '.imp_label', function(e){
+			let n = $(e.target).data('n');
+			let val = $(this).val();
+			menu_data[n].label = val;
+		});
+
+		$(document).on('keyup', '.imp_url', function(e){
+			let n = $(e.target).data('n');
+			let val = $(this).val();
+			menu_data[n].url = val;
+		});
+
+		const renderData = () => {
+			let html_data = '';
+			for (let i = 0; i < menu_data.length; i++) {
+				html_data += renderRow(i, menu_data[i]);
+			}
+			$('#data_container').html(html_data + '<tr>'
+				+ '<td colspan="7">'
+					+ '<button type="button" id="btn_add" class="btn btn-secondary">+</button>'
+					+ '<a type="button" id="btn_reload" href="editor.html" class="btn btn-secondary">Reload</a>'
+					+ '<a type="button" id="btn_go_home" href="index.html" class="btn btn-secondary">go Home</a>'
+					+ '<button type="button" id="btn_save" class="btn btn-primary">Salva</button>'
+				+ '</td>'
+			+ '</tr>');
+		};
+	
+		const renderRow = (n, data) => {
+			if(typeof data == 'undefined'){
+				data = {
+					label: '',
+					icon: '',
+					color: colors[0],
+					url: ''
+				};
+			}
+			return '<tr>'
+				+ '<td><input class="form-control imp_label" name="label['+n+']" data-n="'+n+'" value="' + data.label + '"></td>'
+				+ '<td><input class="form-control imp_icon" name="icon['+n+']" data-n="'+n+'" value="' + data.icon + '"></td>'
+				+ '<td class="icon_view" data-n="'+n+'"><i class="' + data.icon + '"></i></td>'
+				+ '<td>' + renderColorSelect(n, data.color) + '</td>'
+				+ '<td class="color_view ' + data.color + '" data-n="'+n+'"></td>'
+				+ '<td><input class="form-control imp_url" data-n="'+n+'" name="url['+n+']" value="' + data.url + '"></td>'
+				+ '<td class="command">'
+					+ '<div class="btn-group" role="group" aria-label="Basic example">'
+						+ '<button type="button" data-n="'+n+'" class="btn btn-secondary btn_delete far fa-trash-alt"></button>'
+						+ '<button type="button" data-n="'+n+'" class="btn btn-secondary btn_up fas fa-chevron-up"></button>'
+						+ '<button type="button" data-n="'+n+'" class="btn btn-secondary btn_down fas fa-chevron-down"></button>'
+					+ '</div>'
+				+ '</td>'
+			+ '</tr>';
+		};
+
+		const renderColorSelect = (n, selected='') => {
+			let sel = '<select class="form-control sel_color" name="color['+n+']" data-n="'+n+'">';
+			for (let i = 0; i < colors.length; i++) {
+				sel += '<option value="' + colors[i] + '"' + (selected == colors[i] ? ' selected="selected"' : '') + '>' + colors[i] + '</option>';
+			}
+			return sel + '</select>';
+		};
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="css/webfonts/comfortaa/font.css">
+	<link rel="stylesheet" href="css/fontawesome.min.css">
+	<link rel="stylesheet" href="css/colors.css">
+	<title>Home</title>
+	<style>
+		body {
+			font-family: 'Comfortaa', sans-serif;
+			background: #111;
+			color: #fff;
+		}
+
+		.main_wrapper {
+			width: 805px;
+			margin: 200px auto;
+		}
+
+		.badge {
+			position: relative;
+			margin: 0 2px;
+			width: 157px;
+			height: 6.2em;
+			border-radius: 12px;
+			display: inline-block;
+			top: 0;
+			transition: all 0.2s ease;
+			text-align: center;
+			cursor: pointer;
+		}
+
+		.badge:before,
+		.badge:after {
+			position: absolute;
+			width: inherit;
+			height: inherit;
+			border-radius: inherit;
+			background: inherit;
+			content: "";
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+		}
+
+		.badge:before {
+			transform: rotate(60deg);
+		}
+
+		.badge:after {
+			transform: rotate(-60deg);
+		}
+
+		.badge:hover {
+			top: -10px;
+		}
+
+		.badge .circle {
+			width: 80px;
+			height: 80px;
+			position: absolute;
+			background: #fff;
+			z-index: 10;
+			border-radius: 50%;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+		}
+
+		.badge .circle i.fa {
+			font-size: 33px;
+			margin-top: 17px;
+		}
+
+		.badge .font {
+			display: inline-block;
+			margin-top: 1em;
+		}
+
+		.badge .ribbon {
+			position: absolute;
+			border-radius: 4px;
+			padding: 5px 5px 4px;
+			width: 137px;
+			z-index: 11;
+			color: #fff;
+			bottom: 8px;
+			left: 50%;
+			margin-left: -74px;
+			height: 15px;
+			font-size: 14px;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.27);
+			text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+			text-transform: uppercase;
+			background: linear-gradient(to bottom right, #555 0%, #333 100%);
+			cursor: pointer;
+		}
+		.even_wrapper {
+		    margin-left: 81px;
+		    margin-top: 36px;
+		}
+		.odd_wrapper {
+		    margin-top: 36px;
+		}
+	</style>
+	<script src="js/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+	<div class="wrapper main_wrapper"></div>
+	<script>
+		$(document).ready(()=>{
+			$.post('api.php',{
+				action: 'get'
+			},data=>{
+				data.push({
+					label: 'edit menu',
+					color: 'silver',
+					icon: 'fa fa-cog',
+					url: 'http://127.0.0.1:81/home/editor.html'
+				});
+				chunks = [];
+				for(let i=0, l = data.length; i < l; i++){
+					chunks.push(data.splice(0, (5-(i%2))));
+				}
+				let html = '';
+				for (i=0, l=chunks.length; i < l; i++) { 
+					if(i==0){
+						html += '<div class="wrapper">';
+					}else if(i%2){
+						html += '<div class="wrapper even_wrapper">';
+					}else{
+						html += '<div class="wrapper odd_wrapper">';
+					}
+					for (j=0, ll=chunks[i].length; j < ll; j++) { 
+						m = chunks[i][j];
+						html += '<div class="badge ' + m.color + '" data-url="' + m.url + '">'
+							+ '<div class="circle"><i class="' + m.icon + '"></i></div>'
+							+ '<div class="ribbon">' + m.label + '</div>'
+						+ '</div>';
+					}
+					html += '</div>';
+				}
+				$('.main_wrapper').html(html);
+			})
+		});
+		$(document).on('click', '.badge', function(e){
+			let url = $(e.target).data('url');
+			if(typeof url != 'undefined' && url != '')
+				window.location.href = url;
+		});
+		$(document).on('click', '.circle', function(e){
+			$(e.target).parent().click();
+		});
+		$(document).on('click', '.ribbon', function(e){
+			$(e.target).parent().click();
+		});
+	</script>
+</body>
+</html>

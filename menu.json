@@ -1,0 +1,44 @@
+[
+	{
+		"label": "google",
+		"icon": "fafa-bicycle",
+		"color": "yellow",
+		"url": "https://google.com"
+	},
+	{
+		"label": "youtube",
+		"icon": "fafa-camera",
+		"color": "red",
+		"url": "https://youtube.com"
+	},
+	{
+		"label": "facebook",
+		"icon": "fafa-user",
+		"color": "blue",
+		"url": "https://facebook.com"
+	},
+	{
+		"label": "nasa",
+		"icon": "fafa-satellite",
+		"color": "blue-dark",
+		"url": "https://nasa.gov"
+	},
+	{
+		"label": "dummysite",
+		"icon": "fafa-user",
+		"color": "green",
+		"url": "https://example.com"
+	},
+	{
+		"label": "dummysite",
+		"icon": "fafa-user",
+		"color": "silver",
+		"url": "https://example.com"
+	},
+	{
+		"label": "dummysite",
+		"icon": "fafa-user",
+		"color": "orange",
+		"url": "https://example.com"
+	}
+]
