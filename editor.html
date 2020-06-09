@@ -91,9 +91,7 @@
 		let menu_data = [];
 
 		$(document).ready(()=>{
-			$.post('api.php', {
-				action: 'get'
-			}, data => {
+			$.getJSON('menu.json', data => {
 				menu_data = data;
 				renderData();
 			});
