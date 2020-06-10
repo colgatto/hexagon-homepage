@@ -153,14 +153,16 @@
 					<h5 class="modal-title">Params</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				</div>
-				<div class="modal-body">
-					<table id="params_table">
-					</table>
-					<input type="hidden" id="imp_url">
-				</div>
-				<div class="modal-footer">
-					<button id="go_button" type="button" class="btn btn-secondary">Go</button>
-				</div>
+				<form id="go_form" action="#">
+					<div class="modal-body">
+						<table id="params_table">
+						</table>
+						<input type="hidden" id="imp_base_url">
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-secondary">Go</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -209,14 +211,17 @@
 			}
 			if (match.length > 0) {
 				$('#params_table').html('');
+				let toFocus = null;
 				for (let i = 0; i < match.length; i++) {
 					let param =  match[i].slice(1, match[i].length-1);
+					if(i==0) toFocus = param;
 					$('#params_table').append('<tr>'
-						+ '<td>' +  param + '</td><td><input class="form-control param" data-name="' + param + '"></td>'
+						+ '<td>' +  param + '</td><td><input class="form-control param" data-name="' + param + '"' + (i==0 ? ' autofocus' : '') + '></td>'
 						+ '</tr>');
 				}
-				$('#imp_url').val(url);
+				$('#imp_base_url').val(url);
 				$('#ask_modal').modal();
+				$("input:text:visible:first").focus();
 			}else{
 				window.location.href = url;
 			}
@@ -230,9 +235,10 @@
 			$(e.target).parent().click();
 		});
 
-		$('#go_button').click( () => {
+		$('#go_form').submit( (e) => {
+			e.preventDefault();
 			let params = $('input.param').toArray();
-			let url = $('#imp_url').val();
+			let url = $('#imp_base_url').val();
 			for (let i = 0; i < params.length; i++) {
 				url = url.replace('{' + $(params[i]).data('name') + '}', $(params[i]).val());
 			}
