@@ -58,3 +58,8 @@
 	background: linear-gradient(to bottom right, #e6ce6a 0%, #b7892b 100%);
 	color: #b7892b;
 }
+
+.black {
+	background: linear-gradient(to bottom right, #292929 0%, #131313 100%);
+	color: #000000;
+}
