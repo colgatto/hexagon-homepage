@@ -18,7 +18,7 @@
 		}
 
 		.main_wrapper {
-			width: 805px;
+			width: max-content;
 			margin: 200px auto;
 		}
 
@@ -167,6 +167,9 @@
 		</div>
 	</div>
 	<script>
+
+		const HexNumberLine = 6;
+
 		$(document).ready(() => {
 			$.getJSON('menu.json', data => {
 				data.push({
@@ -177,7 +180,7 @@
 				});
 				chunks = [];
 				for (let i = 0, l = data.length; i < l; i++) {
-					chunks.push(data.splice(0, (5 - (i % 2))));
+					chunks.push(data.splice(0, (HexNumberLine - (i % 2))));
 				}
 				let html = '';
 				for (i = 0, l = chunks.length; i < l; i++) {
