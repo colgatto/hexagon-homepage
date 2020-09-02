@@ -1,4 +1,4 @@
-# Exagon Homepage
+# Hexagon Homepage
 
 ### Customizable homepage with simple php backend
 
